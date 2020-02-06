@@ -1,0 +1,5 @@
+host=mail.avi.co
+port=25
+auth_type=PLAIN
+auth_user=
+auth_pass=

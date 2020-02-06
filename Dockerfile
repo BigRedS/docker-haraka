@@ -7,10 +7,8 @@ ENV PATH /usr/local/bin:$HARAKA_HOME/node_modules/.bin:$PATH
 
 # node-gyp emits lots of warnings if HOME is set to /
 ENV HOME /tmp
-RUN npm install -g "Haraka@$HARAKA_VERSION"
+RUN npm install -g "Haraka"
 RUN haraka --install "$HARAKA_HOME"
-
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 
 COPY app/package.json /app/package.json
 WORKDIR /app
@@ -23,8 +21,13 @@ RUN mkdir -p "$HARAKA_HOME" && \
 
 ENV HOME "$HARAKA_HOME"
 
-EXPOSE 25
+EXPOSE 2525
 
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
+RUN useradd -d "$HARAKA_HOME" -s /bin/bash haraka
+RUN chown -R haraka "$HARAKA_HOME"
+RUN chown -R haraka "$HARAKA_DATA"
+RUN ln -s /mnt/secrets/config/smtp-proxy-ini /app/config/smtp-proxy.ini
+
+USER haraka
 
 CMD ["haraka", "-c", "/app"]
